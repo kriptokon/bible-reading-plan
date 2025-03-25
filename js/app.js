@@ -19,7 +19,6 @@ function initializeMDC() {
     // Инициализация линейных индикаторов прогресса
     const hebrewProgressBar = new mdc.linearProgress.MDCLinearProgress(document.getElementById('hebrew-progress'));
     const greekProgressBar = new mdc.linearProgress.MDCLinearProgress(document.getElementById('greek-progress'));
-    const bookProgressBar = new mdc.linearProgress.MDCLinearProgress(document.getElementById('book-progress'));
     
     // Обработчик для переключения между вкладками
     tabBar.listen('MDCTabBar:activated', (event) => {
@@ -39,7 +38,7 @@ function initializeMDC() {
         }
     });
     
-    return { tabBar, hebrewProgressBar, greekProgressBar, bookProgressBar };
+    return { tabBar, hebrewProgressBar, greekProgressBar };
 }
 
 /**
@@ -55,13 +54,6 @@ function updateProgressBars(mdcComponents) {
     const greekProgress = getSectionProgress('greek', readingProgress);
     mdcComponents.greekProgressBar.progress = greekProgress.percentage / 100;
     document.getElementById('greek-progress-text').textContent = `${greekProgress.percentage}%`;
-    
-    // Обновляем прогресс для текущей открытой книги (если есть)
-    if (currentBook) {
-        const bookProgress = getBookProgress(currentBook, readingProgress);
-        mdcComponents.bookProgressBar.progress = bookProgress.percentage / 100;
-        document.getElementById('book-progress-text').textContent = `${bookProgress.percentage}%`;
-    }
 }
 
 /**
@@ -351,39 +343,7 @@ function markAllChaptersInCard(bookId, section, isRead, card, mdcComponents) {
     }
 }
 
-/**
- * Отметить все главы текущей книги как прочитанные/непрочитанные (устаревшая функция для модального окна)
- */
-function markAllChapters(isRead, mdcComponents) {
-    if (!currentBook) return;
-    
-    const section = bibleData.hebrew.some(book => book.id === currentBook) ? 'hebrew' : 'greek';
-    const book = bibleData[section].find(book => book.id === currentBook);
-    
-    if (!book) return;
-    
-    // Обновляем статус всех глав
-    for (let i = 1; i <= book.chapters; i++) {
-        readingProgress[section][currentBook][i] = isRead;
-        saveReadingStatus(currentBook, i, isRead);
-    }
-    
-    // Обновляем отображение глав
-    const chapterItems = document.querySelectorAll('.chapter-item');
-    chapterItems.forEach(item => {
-        if (isRead) {
-            item.classList.add('read');
-        } else {
-            item.classList.remove('read');
-        }
-    });
-    
-    // Обновляем индикаторы прогресса
-    updateProgressBars(mdcComponents);
-    
-    // Обновляем списки книг
-    renderBooksList();
-}
+// Устаревшая функция markAllChapters удалена, так как модальное окно больше не используется
 
 /**
  * Инициализация приложения
