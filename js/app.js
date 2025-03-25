@@ -199,6 +199,24 @@ function addEventListeners(mdcComponents) {
         new mdc.linearProgress.MDCLinearProgress(progressBar);
     });
     
+    // Обработчик для кнопки сброса всего прогресса
+    document.getElementById('reset-all').addEventListener('click', () => {
+        // Показываем диалог подтверждения
+        if (confirm('Вы уверены, что хотите сбросить весь прогресс чтения? Это действие нельзя отменить.')) {
+            // Сбрасываем прогресс
+            readingProgress = resetAllProgress();
+            
+            // Перерисовываем список книг
+            renderBooksList();
+            
+            // Обновляем индикаторы прогресса
+            updateProgressBars(mdcComponents);
+            
+            // Показываем сообщение об успешном сбросе
+            alert('Прогресс чтения успешно сброшен.');
+        }
+    });
+    
     // Обработчик клика по заголовку книги для разворачивания/сворачивания глав
     document.addEventListener('click', (event) => {
         let headerElement = event.target.closest('.book-header');

@@ -149,6 +149,35 @@ function saveLastTab(tabId) {
 }
 
 /**
+ * Сбросить весь прогресс чтения
+ * @returns {Object} новый пустой объект с прогрессом
+ */
+function resetAllProgress() {
+    // Сначала удаляем все элементы локального хранилища, связанные с чтением
+    bibleData.hebrew.forEach(book => {
+        for (let i = 1; i <= book.chapters; i++) {
+            const key = getStorageKey(book.id, i);
+            localStorage.removeItem(key);
+        }
+    });
+    
+    bibleData.greek.forEach(book => {
+        for (let i = 1; i <= book.chapters; i++) {
+            const key = getStorageKey(book.id, i);
+            localStorage.removeItem(key);
+        }
+    });
+    
+    // Сохраняем только информацию о последней открытой вкладке
+    const lastTab = localStorage.getItem('bible_last_tab') || 'hebrew';
+    localStorage.removeItem('bible_last_book');
+    localStorage.setItem('bible_last_tab', lastTab);
+    
+    // Возвращаем новый объект с пустым прогрессом
+    return loadReadingProgress();
+}
+
+/**
  * Получить прогресс чтения для книги
  * @param {string} bookId - ID книги
  * @param {Object} readingProgress - объект с прогрессом чтения
