@@ -4,8 +4,18 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>План чтения Библии</title>
+    
+    <!-- PWA Meta Tags -->
     <link rel="manifest" href="manifest.json">
     <meta name="theme-color" content="#6200ee">
+    <meta name="description" content="Приложение для отслеживания прогресса чтения Библии">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="БиблияПлан">
+    
+    <!-- PWA Icons -->
+    <link rel="icon" type="image/png" sizes="196x196" href="icons/icon-192x192.png">
+    <link rel="apple-touch-icon" href="icons/icon-192x192.png">
     
     <!-- Material Icons -->
     <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
@@ -110,5 +120,69 @@
     <script src="js/data.js"></script>
     <script src="js/theme.js"></script>
     <script src="js/app.js"></script>
+    
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then((registration) => {
+                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                    })
+                    .catch((error) => {
+                        console.log('ServiceWorker registration failed: ', error);
+                    });
+            });
+        }
+        
+        // PWA Install Prompt
+        let deferredPrompt;
+        const installButton = document.createElement('button');
+        installButton.style.display = 'none';
+        
+        window.addEventListener('beforeinstallprompt', (e) => {
+            // Prevent Chrome 67 and earlier from automatically showing the prompt
+            e.preventDefault();
+            // Stash the event so it can be triggered later
+            deferredPrompt = e;
+            
+            // Show the install button if it's not already installed
+            if (!window.matchMedia('(display-mode: standalone)').matches) {
+                // Создаем кнопку установки в верхней панели
+                installButton.className = 'mdc-icon-button material-icons';
+                installButton.textContent = 'get_app';
+                installButton.title = 'Установить приложение';
+                
+                // Добавляем обработчик события клика для кнопки установки
+                installButton.addEventListener('click', async () => {
+                    if (deferredPrompt) {
+                        // Показываем диалог установки
+                        deferredPrompt.prompt();
+                        
+                        // Ожидаем ответа пользователя
+                        const { outcome } = await deferredPrompt.userChoice;
+                        console.log(`User response to the install prompt: ${outcome}`);
+                        
+                        // Очищаем сохраненный prompt, он может быть использован только один раз
+                        deferredPrompt = null;
+                        
+                        // Скрываем кнопку установки
+                        installButton.style.display = 'none';
+                    }
+                });
+                
+                // Добавляем кнопку в верхний правый угол панели
+                const topAppBarEnd = document.querySelector('.mdc-top-app-bar__section--align-end');
+                topAppBarEnd.insertBefore(installButton, topAppBarEnd.firstChild);
+                installButton.style.display = 'flex';
+            }
+        });
+        
+        // Скрываем кнопку установки, если приложение уже установлено
+        window.addEventListener('appinstalled', (evt) => {
+            console.log('App was installed');
+            installButton.style.display = 'none';
+        });
+    </script>
 </body>
 </html>
