@@ -254,3 +254,37 @@ body {
         grid-template-columns: repeat(3, 1fr);
     }
 }
+
+/* Стили для верхней панели и кнопок */
+.mdc-top-app-bar {
+    background-color: var(--mdc-theme-primary);
+    color: var(--mdc-theme-on-primary);
+}
+
+/* Улучшаем видимость иконок в верхней панели */
+.mdc-top-app-bar__section--align-end .mdc-icon-button {
+    color: var(--mdc-theme-on-primary);
+    margin-left: 8px;
+    font-size: 24px;
+    width: 48px;
+    height: 48px;
+    padding: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.mdc-top-app-bar__section--align-end .mdc-icon-button:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+}
+
+.dark-theme .mdc-top-app-bar__section--align-end .mdc-icon-button {
+    color: var(--mdc-theme-on-primary);
+}
+
+/* Специальные стили для кнопки сброса */
+#reset-all {
+    color: var(--mdc-theme-on-primary);
+    font-weight: bold;
+}
