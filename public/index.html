@@ -1,5 +1,9 @@
 <head>
-  // ...existing code...
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="theme-color" content="#000000">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
   <link rel="manifest" href="/manifest.json">
   <script>
     if ('serviceWorker' in navigator) {
@@ -7,6 +11,42 @@
         navigator.serviceWorker.register('/service-worker.js');
       });
     }
+    
+    // Добавляем определение статуса подключения
+    window.addEventListener('online', function() {
+      document.body.classList.remove('offline');
+    });
+    
+    window.addEventListener('offline', function() {
+      document.body.classList.add('offline');
+    });
+    
+    // Принудительно включаем оффлайн режим
+    window.addEventListener('load', function() {
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/service-worker.js');
+      }
+      
+      // Блокируем сетевые запросы
+      window.addEventListener('online', function(e) {
+        e.preventDefault();
+        document.body.classList.add('offline');
+      });
+      
+      document.body.classList.add('offline');
+    });
+    
+    // Настраиваем локальное хранилище
+    const storage = window.localStorage;
+    
+    // Функция для сохранения данных
+    function saveData(key, value) {
+      storage.setItem(key, JSON.stringify(value));
+    }
+    
+    // Функция для получения данных
+    function getData(key) {
+      return JSON.parse(storage.getItem(key));
+    }
   </script>
-  // ...existing code...
 </head>

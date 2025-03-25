@@ -16,5 +16,13 @@
       "sizes": "512x512",
       "type": "image/png"
     }
-  ]
+  ],
+  "orientation": "any",
+  "scope": "/",
+  "categories": ["productivity"],
+  "screenshots": [],
+  "shortcuts": [],
+  "description": "Todo Tracker Application",
+  "prefer_related_applications": false,
+  "offline_enabled": true
 }
