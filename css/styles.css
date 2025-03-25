@@ -54,6 +54,16 @@ body {
     margin-bottom: 16px;
 }
 
+.mdc-tab__text-label {
+    color: var(--mdc-theme-text-primary-on-background);
+    font-weight: 500;
+}
+
+/* Усиливаем контраст для темной темы */
+.dark-theme .mdc-tab__text-label {
+    color: #ffffff;
+}
+
 .tab-content {
     padding: 0 16px;
 }
@@ -79,16 +89,20 @@ body {
     border-radius: 8px;
     padding: 16px;
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    flex-direction: column;
     box-shadow: var(--card-shadow);
-    cursor: pointer;
     transition: all 0.2s ease;
 }
 
-.book-card:hover {
+.book-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+}
+
+.book-card:hover .book-header {
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
 }
 
 .book-info {
@@ -110,6 +124,30 @@ body {
 
 .book-icon {
     color: var(--mdc-theme-secondary);
+    transition: transform 0.3s ease;
+}
+
+.book-card.expanded .book-icon {
+    transform: rotate(90deg);
+}
+
+.book-chapters {
+    display: none;
+    margin-top: 16px;
+    border-top: 1px solid rgba(0, 0, 0, 0.12);
+    padding-top: 16px;
+}
+
+.dark-theme .book-chapters {
+    border-top: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.book-card.expanded .book-chapters {
+    display: block;
+}
+
+.book-progress-bar {
+    margin: 8px 0;
 }
 
 /* Progress Summary */

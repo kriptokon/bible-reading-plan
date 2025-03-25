@@ -73,6 +73,11 @@ function createBookCard(book, sectionType, readingProgress) {
     const card = document.createElement('div');
     card.className = 'book-card';
     card.setAttribute('data-book-id', book.id);
+    card.setAttribute('data-section', sectionType);
+    
+    // Создаем заголовок карточки (часть, которая всегда видна)
+    const header = document.createElement('div');
+    header.className = 'book-header';
     
     const bookInfo = document.createElement('div');
     bookInfo.className = 'book-info';
@@ -87,12 +92,82 @@ function createBookCard(book, sectionType, readingProgress) {
     
     const icon = document.createElement('span');
     icon.className = 'material-icons book-icon';
-    icon.textContent = bookProgress.percentage === 100 ? 'check_circle' : 'arrow_forward';
+    icon.textContent = 'arrow_forward';
     
     bookInfo.appendChild(title);
     bookInfo.appendChild(progress);
-    card.appendChild(bookInfo);
-    card.appendChild(icon);
+    header.appendChild(bookInfo);
+    header.appendChild(icon);
+    
+    // Создаем разворачивающуюся часть с главами
+    const chaptersContainer = document.createElement('div');
+    chaptersContainer.className = 'book-chapters';
+    
+    // Добавляем прогресс-бар для книги
+    const progressBarContainer = document.createElement('div');
+    progressBarContainer.className = 'progress-summary book-progress-bar';
+    
+    const progressBar = document.createElement('div');
+    progressBar.className = 'mdc-linear-progress';
+    progressBar.setAttribute('role', 'progressbar');
+    
+    progressBar.innerHTML = `
+        <div class="mdc-linear-progress__buffer"></div>
+        <div class="mdc-linear-progress__bar mdc-linear-progress__primary-bar">
+            <span class="mdc-linear-progress__bar-inner"></span>
+        </div>
+        <div class="mdc-linear-progress__bar mdc-linear-progress__secondary-bar">
+            <span class="mdc-linear-progress__bar-inner"></span>
+        </div>
+    `;
+    
+    const progressText = document.createElement('div');
+    progressText.className = 'progress-text';
+    progressText.textContent = `${bookProgress.percentage}%`;
+    
+    progressBarContainer.appendChild(progressBar);
+    progressBarContainer.appendChild(progressText);
+    chaptersContainer.appendChild(progressBarContainer);
+    
+    // Создаем сетку глав
+    const chaptersGrid = document.createElement('div');
+    chaptersGrid.className = 'chapters-grid';
+    
+    // Создаем кнопки для каждой главы
+    for (let i = 1; i <= book.chapters; i++) {
+        const chapterItem = document.createElement('div');
+        chapterItem.className = 'chapter-item';
+        if (readingProgress[sectionType][book.id][i]) {
+            chapterItem.classList.add('read');
+        }
+        chapterItem.setAttribute('data-chapter', i);
+        chapterItem.textContent = i;
+        chaptersGrid.appendChild(chapterItem);
+    }
+    
+    chaptersContainer.appendChild(chaptersGrid);
+    
+    // Кнопки для маркировки всех глав
+    const actionsContainer = document.createElement('div');
+    actionsContainer.className = 'modal-actions';
+    
+    const markAllReadBtn = document.createElement('button');
+    markAllReadBtn.className = 'mdc-button mdc-button--raised mark-all-read-btn';
+    markAllReadBtn.innerHTML = '<span class="mdc-button__label">Отметить все как прочитанное</span>';
+    markAllReadBtn.setAttribute('data-book-id', book.id);
+    
+    const markAllUnreadBtn = document.createElement('button');
+    markAllUnreadBtn.className = 'mdc-button mark-all-unread-btn';
+    markAllUnreadBtn.innerHTML = '<span class="mdc-button__label">Отметить все как непрочитанное</span>';
+    markAllUnreadBtn.setAttribute('data-book-id', book.id);
+    
+    actionsContainer.appendChild(markAllReadBtn);
+    actionsContainer.appendChild(markAllUnreadBtn);
+    chaptersContainer.appendChild(actionsContainer);
+    
+    // Добавляем все элементы в карточку
+    card.appendChild(header);
+    card.appendChild(chaptersContainer);
     
     return card;
 }
@@ -121,70 +196,58 @@ function renderBooksList() {
     });
 }
 
-/**
- * Отображение модального окна с главами книги
- */
-function showBookDetail(bookId, mdcComponents) {
-    const section = bibleData.hebrew.some(book => book.id === bookId) ? 'hebrew' : 'greek';
-    const book = bibleData[section].find(book => book.id === bookId);
-    
-    if (!book) return;
-    
-    // Устанавливаем текущую книгу
-    currentBook = bookId;
-    saveLastBook(bookId);
-    
-    // Заполняем модальное окно
-    document.getElementById('book-detail-title').textContent = book.name;
-    
-    const chaptersGrid = document.getElementById('chapters-grid');
-    chaptersGrid.innerHTML = '';
-    
-    // Создаем кнопки для каждой главы
-    for (let i = 1; i <= book.chapters; i++) {
-        const chapterItem = document.createElement('div');
-        chapterItem.className = 'chapter-item';
-        if (readingProgress[section][bookId][i]) {
-            chapterItem.classList.add('read');
-        }
-        chapterItem.setAttribute('data-chapter', i);
-        chapterItem.textContent = i;
-        chaptersGrid.appendChild(chapterItem);
-    }
-    
-    // Обновляем прогресс для книги
-    const bookProgress = getBookProgress(bookId, readingProgress);
-    mdcComponents.bookProgressBar.progress = bookProgress.percentage / 100;
-    document.getElementById('book-progress-text').textContent = `${bookProgress.percentage}%`;
-    
-    // Отображаем модальное окно
-    document.getElementById('book-detail-modal').classList.add('active');
-}
+// Функция showBookDetail удалена, так как теперь мы используем разворачивающиеся карточки
 
 /**
  * Добавление обработчиков событий
  */
 function addEventListeners(mdcComponents) {
-    // Обработчик клика по книге для отображения детальной информации
-    document.querySelectorAll('.book-card').forEach(card => {
-        card.addEventListener('click', () => {
+    // Инициализируем линейные индикаторы прогресса для каждой книги
+    document.querySelectorAll('.book-card .mdc-linear-progress').forEach(progressBar => {
+        new mdc.linearProgress.MDCLinearProgress(progressBar);
+    });
+    
+    // Обработчик клика по заголовку книги для разворачивания/сворачивания глав
+    document.addEventListener('click', (event) => {
+        let headerElement = event.target.closest('.book-header');
+        if (headerElement) {
+            const card = headerElement.closest('.book-card');
             const bookId = card.getAttribute('data-book-id');
-            showBookDetail(bookId, mdcComponents);
-        });
+            
+            // Сохраняем ID книги
+            currentBook = bookId;
+            saveLastBook(bookId);
+            
+            // Разворачиваем/сворачиваем карточку
+            if (card.classList.contains('expanded')) {
+                card.classList.remove('expanded');
+            } else {
+                // Сворачиваем все другие карточки
+                document.querySelectorAll('.book-card.expanded').forEach(expandedCard => {
+                    if (expandedCard !== card) {
+                        expandedCard.classList.remove('expanded');
+                    }
+                });
+                
+                card.classList.add('expanded');
+            }
+        }
     });
     
     // Обработчик клика по главе для изменения статуса прочтения
-    document.getElementById('chapters-grid').addEventListener('click', (event) => {
+    document.addEventListener('click', (event) => {
         if (event.target.classList.contains('chapter-item')) {
             const chapter = parseInt(event.target.getAttribute('data-chapter'));
-            const section = bibleData.hebrew.some(book => book.id === currentBook) ? 'hebrew' : 'greek';
+            const card = event.target.closest('.book-card');
+            const bookId = card.getAttribute('data-book-id');
+            const section = card.getAttribute('data-section');
             
             // Инвертируем статус
-            const isCurrentlyRead = readingProgress[section][currentBook][chapter];
-            readingProgress[section][currentBook][chapter] = !isCurrentlyRead;
+            const isCurrentlyRead = readingProgress[section][bookId][chapter];
+            readingProgress[section][bookId][chapter] = !isCurrentlyRead;
             
             // Сохраняем изменения
-            saveReadingStatus(currentBook, chapter, !isCurrentlyRead);
+            saveReadingStatus(bookId, chapter, !isCurrentlyRead);
             
             // Обновляем визуальное отображение
             if (!isCurrentlyRead) {
@@ -196,35 +259,100 @@ function addEventListeners(mdcComponents) {
             // Обновляем индикаторы прогресса
             updateProgressBars(mdcComponents);
             
-            // Обновляем списки книг
-            renderBooksList();
+            // Обновляем содержимое карточки
+            const bookProgress = getBookProgress(bookId, readingProgress);
+            card.querySelector('.book-progress').textContent = 
+                `Прочитано ${bookProgress.read} из ${bookProgress.total} (${bookProgress.percentage}%)`;
+            
+            // Обновляем прогресс-бар книги
+            const progressBar = card.querySelector('.mdc-linear-progress');
+            if (progressBar && progressBar.MDCLinearProgress) {
+                progressBar.MDCLinearProgress.progress = bookProgress.percentage / 100;
+            }
+            card.querySelector('.progress-text').textContent = `${bookProgress.percentage}%`;
+            
+            // Если все главы прочитаны, обновляем иконку книги
+            const bookIcon = card.querySelector('.book-icon');
+            if (bookProgress.percentage === 100) {
+                bookIcon.textContent = 'check_circle';
+            } else {
+                bookIcon.textContent = 'arrow_forward';
+            }
         }
     });
     
-    // Обработчик закрытия модального окна
-    document.getElementById('close-modal').addEventListener('click', () => {
-        document.getElementById('book-detail-modal').classList.remove('active');
-    });
-    
     // Обработчики кнопок "Отметить все как прочитанное/непрочитанное"
-    document.getElementById('mark-all-read').addEventListener('click', () => {
-        markAllChapters(true, mdcComponents);
-    });
-    
-    document.getElementById('mark-all-unread').addEventListener('click', () => {
-        markAllChapters(false, mdcComponents);
-    });
-    
-    // Закрытие модального окна при клике на затемненную область
-    document.getElementById('book-detail-modal').addEventListener('click', (event) => {
-        if (event.target === document.getElementById('book-detail-modal')) {
-            document.getElementById('book-detail-modal').classList.remove('active');
+    document.addEventListener('click', (event) => {
+        if (event.target.closest('.mark-all-read-btn')) {
+            const btn = event.target.closest('.mark-all-read-btn');
+            const bookId = btn.getAttribute('data-book-id');
+            const card = btn.closest('.book-card');
+            const section = card.getAttribute('data-section');
+            
+            markAllChaptersInCard(bookId, section, true, card, mdcComponents);
+            event.stopPropagation();
+        } else if (event.target.closest('.mark-all-unread-btn')) {
+            const btn = event.target.closest('.mark-all-unread-btn');
+            const bookId = btn.getAttribute('data-book-id');
+            const card = btn.closest('.book-card');
+            const section = card.getAttribute('data-section');
+            
+            markAllChaptersInCard(bookId, section, false, card, mdcComponents);
+            event.stopPropagation();
         }
     });
 }
 
 /**
- * Отметить все главы текущей книги как прочитанные/непрочитанные
+ * Отметить все главы в открытой карточке книги как прочитанные/непрочитанные
+ */
+function markAllChaptersInCard(bookId, section, isRead, card, mdcComponents) {
+    const book = bibleData[section].find(book => book.id === bookId);
+    
+    if (!book) return;
+    
+    // Обновляем статус всех глав
+    for (let i = 1; i <= book.chapters; i++) {
+        readingProgress[section][bookId][i] = isRead;
+        saveReadingStatus(bookId, i, isRead);
+    }
+    
+    // Обновляем отображение глав в этой карточке
+    const chapterItems = card.querySelectorAll('.chapter-item');
+    chapterItems.forEach(item => {
+        if (isRead) {
+            item.classList.add('read');
+        } else {
+            item.classList.remove('read');
+        }
+    });
+    
+    // Обновляем индикаторы прогресса
+    updateProgressBars(mdcComponents);
+    
+    // Обновляем содержимое карточки
+    const bookProgress = getBookProgress(bookId, readingProgress);
+    card.querySelector('.book-progress').textContent = 
+        `Прочитано ${bookProgress.read} из ${bookProgress.total} (${bookProgress.percentage}%)`;
+    
+    // Обновляем прогресс-бар книги
+    const progressBar = card.querySelector('.mdc-linear-progress');
+    if (progressBar && progressBar.MDCLinearProgress) {
+        progressBar.MDCLinearProgress.progress = bookProgress.percentage / 100;
+    }
+    card.querySelector('.progress-text').textContent = `${bookProgress.percentage}%`;
+    
+    // Если все главы прочитаны, обновляем иконку книги
+    const bookIcon = card.querySelector('.book-icon');
+    if (bookProgress.percentage === 100) {
+        bookIcon.textContent = 'check_circle';
+    } else {
+        bookIcon.textContent = 'arrow_forward';
+    }
+}
+
+/**
+ * Отметить все главы текущей книги как прочитанные/непрочитанные (устаревшая функция для модального окна)
  */
 function markAllChapters(isRead, mdcComponents) {
     if (!currentBook) return;
@@ -286,7 +414,10 @@ function initApp() {
         setTimeout(() => {
             const bookCard = document.querySelector(`[data-book-id="${readingProgress.lastBook}"]`);
             if (bookCard) {
-                bookCard.click();
+                const headerElement = bookCard.querySelector('.book-header');
+                if (headerElement) {
+                    headerElement.click();
+                }
             }
         }, 300);
     }
