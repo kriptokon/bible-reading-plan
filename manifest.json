@@ -1,0 +1,17 @@
+{
+  "name": "План чтения Библии",
+  "short_name": "БиблияПлан",
+  "description": "Приложение для отслеживания прогресса чтения Библии",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#6200ee",
+  "theme_color": "#6200ee",
+  "icons": [
+    {
+      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' width='192' height='192'%3E%3Cpath fill='none' d='M0 0h24v24H0z'/%3E%3Cpath d='M6 2h12a2 2 0 0 1 2 2v16a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2zm0 2v16h12V4H6zm2 8h8v2H8v-2zm0-4h8v2H8V8zm0 8h5v2H8v-2z' fill='%236200ee'/%3E%3C/svg%3E",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    }
+  ],
+  "orientation": "portrait"
+}

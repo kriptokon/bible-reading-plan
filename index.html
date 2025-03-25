@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>План чтения Библии</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#6200ee">
+    
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
+    <!-- Material Web Components -->
+    <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body class="mdc-typography">
+    <header class="mdc-top-app-bar mdc-top-app-bar--fixed">
+        <div class="mdc-top-app-bar__row">
+            <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
+                <span class="mdc-top-app-bar__title">План чтения Библии</span>
+            </section>
+            <section class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end">
+                <button id="theme-toggle" class="mdc-icon-button material-icons">
+                    brightness_6
+                </button>
+            </section>
+        </div>
+    </header>
+
+    <main class="mdc-top-app-bar--fixed-adjust">
+        <!-- Tabs -->
+        <div class="mdc-tab-bar" role="tablist">
+            <div class="mdc-tab-scroller">
+                <div class="mdc-tab-scroller__scroll-area">
+                    <div class="mdc-tab-scroller__scroll-content">
+                        <button class="mdc-tab mdc-tab--active" role="tab" aria-selected="true" tabindex="0" id="hebrew-tab">
+                            <span class="mdc-tab__content">
+                                <span class="mdc-tab__text-label">Еврейско-арамейские Писания</span>
+                            </span>
+                            <span class="mdc-tab-indicator mdc-tab-indicator--active">
+                                <span class="mdc-tab-indicator__content mdc-tab-indicator__content--underline"></span>
+                            </span>
+                            <span class="mdc-tab__ripple"></span>
+                        </button>
+                        <button class="mdc-tab" role="tab" aria-selected="false" tabindex="-1" id="greek-tab">
+                            <span class="mdc-tab__content">
+                                <span class="mdc-tab__text-label">Христианские Греческие Писания</span>
+                            </span>
+                            <span class="mdc-tab-indicator">
+                                <span class="mdc-tab-indicator__content mdc-tab-indicator__content--underline"></span>
+                            </span>
+                            <span class="mdc-tab__ripple"></span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content for tabs -->
+        <div class="tab-content">
+            <div class="tab-panel active" id="hebrew-panel">
+                <div class="progress-summary">
+                    <div class="mdc-linear-progress" role="progressbar" id="hebrew-progress">
+                        <div class="mdc-linear-progress__buffer"></div>
+                        <div class="mdc-linear-progress__bar mdc-linear-progress__primary-bar">
+                            <span class="mdc-linear-progress__bar-inner"></span>
+                        </div>
+                        <div class="mdc-linear-progress__bar mdc-linear-progress__secondary-bar">
+                            <span class="mdc-linear-progress__bar-inner"></span>
+                        </div>
+                    </div>
+                    <div class="progress-text" id="hebrew-progress-text">0%</div>
+                </div>
+                
+                <div class="books-list" id="hebrew-books-list">
+                    <!-- Books will be dynamically inserted here -->
+                </div>
+            </div>
+            
+            <div class="tab-panel" id="greek-panel">
+                <div class="progress-summary">
+                    <div class="mdc-linear-progress" role="progressbar" id="greek-progress">
+                        <div class="mdc-linear-progress__buffer"></div>
+                        <div class="mdc-linear-progress__bar mdc-linear-progress__primary-bar">
+                            <span class="mdc-linear-progress__bar-inner"></span>
+                        </div>
+                        <div class="mdc-linear-progress__bar mdc-linear-progress__secondary-bar">
+                            <span class="mdc-linear-progress__bar-inner"></span>
+                        </div>
+                    </div>
+                    <div class="progress-text" id="greek-progress-text">0%</div>
+                </div>
+                
+                <div class="books-list" id="greek-books-list">
+                    <!-- Books will be dynamically inserted here -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Book Detail Modal -->
+        <div class="modal" id="book-detail-modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2 id="book-detail-title">Книга</h2>
+                    <button id="close-modal" class="mdc-icon-button material-icons">close</button>
+                </div>
+                <div class="progress-summary">
+                    <div class="mdc-linear-progress" role="progressbar" id="book-progress">
+                        <div class="mdc-linear-progress__buffer"></div>
+                        <div class="mdc-linear-progress__bar mdc-linear-progress__primary-bar">
+                            <span class="mdc-linear-progress__bar-inner"></span>
+                        </div>
+                        <div class="mdc-linear-progress__bar mdc-linear-progress__secondary-bar">
+                            <span class="mdc-linear-progress__bar-inner"></span>
+                        </div>
+                    </div>
+                    <div class="progress-text" id="book-progress-text">0%</div>
+                </div>
+                <div class="chapters-grid" id="chapters-grid">
+                    <!-- Chapters will be dynamically inserted here -->
+                </div>
+                <div class="modal-actions">
+                    <button id="mark-all-read" class="mdc-button mdc-button--raised">
+                        <span class="mdc-button__label">Отметить все как прочитанное</span>
+                    </button>
+                    <button id="mark-all-unread" class="mdc-button">
+                        <span class="mdc-button__label">Отметить все как непрочитанное</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="js/data.js"></script>
+    <script src="js/theme.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
