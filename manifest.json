@@ -2,9 +2,10 @@
   "name": "План чтения Библии",
   "short_name": "БиблияПлан",
   "description": "Приложение для отслеживания прогресса чтения Библии",
-  "start_url": "/",
+  "start_url": "./index.html",
+  "scope": "/bible-reading-plan/",
   "display": "standalone",
-  "background_color": "#6200ee",
+  "background_color": "#ffffff",
   "theme_color": "#6200ee",
   "icons": [
     {
@@ -28,14 +29,12 @@
     {
       "src": "icons/icon-144x144.png",
       "sizes": "144x144",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/png"
     },
     {
       "src": "icons/icon-152x152.png",
       "sizes": "152x152",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/png"
     },
     {
       "src": "icons/icon-192x192.png",
@@ -46,8 +45,7 @@
     {
       "src": "icons/icon-384x384.png",
       "sizes": "384x384",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/png"
     },
     {
       "src": "icons/icon-512x512.png",
@@ -56,7 +54,43 @@
       "purpose": "any maskable"
     }
   ],
-  "orientation": "portrait",
+  "orientation": "any",
+  "categories": ["books", "education", "lifestyle"],
   "prefer_related_applications": false,
-  "related_applications": []
+  "related_applications": [],
+  "shortcuts": [
+    {
+      "name": "Еврейские Писания",
+      "url": "/?tab=hebrew",
+      "icons": [{ "src": "icons/shortcut-hebrew.png", "sizes": "96x96" }]
+    },
+    {
+      "name": "Греческие Писания",
+      "url": "/?tab=greek",
+      "icons": [{ "src": "icons/shortcut-greek.png", "sizes": "96x96" }]
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "screenshots/hebrew.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "platform": "wide",
+      "label": "Hebrew Scriptures View"
+    },
+    {
+      "src": "screenshots/greek.png",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "platform": "wide",
+      "label": "Greek Scriptures View"
+    }
+  ],
+  "features": [
+    "Cross Platform",
+    "Offline Functionality",
+    "Progressive"
+  ],
+  "iarc_rating_id": "",
+  "android_package_name": "com.biblereading.plan"
 }
